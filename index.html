@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>English Evaluation Exam</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-Fo3rlrZj/k7ujTnHg4CGR2D7kSs0v4LLanw2qksYuRlEzO+tcaEPQogQ0KaoGN26/zrn20ImR1DfuLWnOo7aBA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        /* Estilos personalizados */
+        body {
+            font-family: sans-serif;
+            transition: background-color 0.3s ease;
+        }
+        .dark-mode {
+            background-color: #1a202c;
+            color: #f7fafc;
+        }
+        .question-container {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .dark-mode .question-container {
+            background-color: #2d3748;
+            border-color: #4a5568;
+            color: #edf2f7;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        .options-container label {
+            display: block;
+            margin-bottom: 8px;
+            cursor: pointer;
+        }
+        .dark-mode .options-container label {
+            color: #e2e8f0;
+        }
+        .result-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .result-table th, .result-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        .dark-mode .result-table th, .dark-mode .result-table td {
+            border-color: #4a5568;
+        }
+        .motivation-message {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+        .dark-mode .motivation-message {
+            color: #a0aec0;
+        }
+        .navigation-icons {
+            font-size: 1.5em;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+        .feedback-correct {
+            color: green;
+        }
+        .feedback-incorrect {
+            color: red;
+        }
+        .lazy-load {
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+        .loaded {
+            opacity: 1;
+        }
+        #results-container {
+            display: none;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 dark:bg-gray-800">
+    <div class="container mt-5 p-4 bg-white dark:bg-gray-700 rounded shadow-md">
+        <h1 class="text-center mb-4 text-xl font-semibold text-gray-800 dark:text-gray-100">English Evaluation Exam</h1>
+        <form id="exam-form">
+            <div id="questions-container">
+                </div>
+
+            <button type="submit" class="btn btn-primary mt-3">Submit Exam</button>
+        </form>
+
+        <div id="results-container" class="mt-5">
+            <h2 class="text-center mb-4 text-lg font-semibold text-gray-800 dark:text-gray-100">Exam Results</h2>
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <canvas id="results-chart"></canvas>
+                </div>
+            </div>
+            <div class="mt-4">
+                <h3 class="text-md font-semibold text-gray-800 dark:text-gray-100">Summary</h3>
+                <table class="result-table">
+                    <thead>
+                        <tr>
+                            <th>Total Questions</th>
+                            <th>Correct Answers</th>
+                            <th>Incorrect Answers</th>
+                            <th>Level</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td id="total-questions"></td>
+                            <td id="correct-answers"></td>
+                            <td id="incorrect-answers"></td>
+                            <td id="level"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="mt-4">
+                <h3 class="text-md font-semibold text-gray-800 dark:text-gray-100">Your Information</h3>
+                <form id="user-info-form" class="mt-2">
+                    <div class="mb-3">
+                        <label for="full-name" class="form-label text-gray-700 dark:text-gray-300">Full Name:</label>
+                        <input type="text" class="form-control" id="full-name" required aria-required="true">
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label text-gray-700 dark:text-gray-300">Email Address:</label>
+                        <input type="email" class="form-control" id="email" required aria-required="true">
+                    </div>
+                    <button type="button" class="btn btn-success" onclick="sendResultsByEmail()">
+                        <i class="far fa-envelope navigation-icons" aria-label="Send results by email"></i> Send Results by Email
+                    </button>
+                    </form>
+            </div>
+
+            <div class="mt-4">
+                <p id="motivation-message" class="motivation-message text-center"></p>
+            </div>
+
+            <div class="mt-4 text-center">
+                <button class="btn btn-secondary me-2" onclick="downloadCSV()">
+                    <i class="fas fa-download navigation-icons" aria-label="Download results as CSV"></i> Download as CSV
+                </button>
+                <button class="btn btn-info me-2" onclick="downloadChart()">
+                    <i class="fas fa-chart-pie navigation-icons" aria-label="Download chart as PNG"></i> Download Chart
+                </button>
+                <button class="btn btn-dark" onclick="downloadHTML()">
+                    <i class="fas fa-code navigation-icons" aria-label="Download as HTML"></i> Download as HTML
+                </button>
+            </div>
+        </div>
+
+        <div class="fixed bottom-4 right-4">
+            <button id="theme-toggle" class="bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-gray-200 rounded-full p-2 shadow-md hover:bg-gray-400 dark:hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-500 transition duration-300" aria-label="Toggle light/dark mode">
+                <i id="theme-icon" class="fas fa-sun"></i>
+            </button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
+    <script>
+        const questionsData = [
+            {
+                type: 'text',
+                question: 'Choose the correct form of the verb to be: They _____ students.',
+                options: ['is', 'am', 'are', 'be'],
+                answer: 'are',
+                level: 'basic'
+            },
+            {
+                type: 'image',
+                question: 'What is this?',
+                imageSrc: 'https://via.placeholder.com/100', // Reemplazar con URL de imagen real
+                options: ['cat', 'dog', 'bird', 'fish'],
+                answer: 'cat',
+                level: 'basic'
+            },
+            {
+                type: 'audio',
+                question: 'Listen and choose the word you hear.',
+                audioSrc: '#', // Reemplazar con URL de audio real
+                options: ['ship', 'sheep', 'chip', 'cheap'],
+                answer: 'sheep',
+                level: 'intermediate'
+            },
+            {
+                type: 'text',
+                question: 'Which of the following is a synonym for "happy"?',
+                options: ['sad', 'angry', 'joyful', 'tired'],
+                answer: 'joyful',
+                level: 'intermediate'
+            },
+            {
+                type: 'text',
+                question: 'Complete the sentence: If I had studied harder, I _____ passed the exam.',
+                options: ['will have', 'would have', 'had', 'would'],
+                answer: 'would have',
+                level: 'advanced'
+            },
+            {
+                type: 'text',
+                question: 'What is the plural form of "child"?',
+                options: ['childs', 'children', 'childes', 'childre'],
+                answer: 'children',
+                level: 'basic'
+            },
+            {
+                type: 'image',
+                question: 'Identify the fruit shown in the image.',
+                imageSrc: 'https://via.placeholder.com/100/FF0000', // Ejemplo de una manzana roja
+                options: ['banana', 'apple', 'orange', 'grape'],
+                answer: 'apple',
+                level: 'basic'
+            },
+            {
+                type: 'audio',
+                question: 'Select the sentence you hear.',
+                audioSrc: '#', // Reemplazar con URL de audio real
+                options: ['The sun is shining.', 'It is raining today.', 'The birds are singing.', 'I like to read books.'],
+                answer: 'The sun is shining.',
+                level: 'intermediate'
+            },
+            {
+                type: 'text',
+                question: 'Choose the antonym of "fast".',
+                options: ['quick', 'rapid', 'slow', 'swift'],
+                answer: 'slow',
+                level: 'intermediate'
+            },
+            {
+                type: 'text',
+                question: 'Which idiom means "to be very happy"?',
+                options: ['feeling blue', 'on cloud nine', 'in a bad mood', 'under the weather'],
+                answer: 'on cloud nine',
+                level: 'advanced'
+            },
+            {
+                type: 'text',
+                question: 'Select the correct preposition: The book is _____ the table.',
+                options: ['in', 'on', 'at', 'under'],
+                answer: 'on',
+                level: 'basic'
+            },
+            {
+                type: 'image',
+                question: 'Recognize the animal in the picture.',
+                imageSrc: 'https://via.placeholder.com/100/00FF00', // Ejemplo de un árbol
+                options: ['flower', 'tree', 'grass', 'bush'],
+                answer: 'tree',
+                level: 'basic'
+            },
+            {
+                type: 'audio',
+                question: 'Pick the correct spelling of the word you hear.',
+                audioSrc: '#', // Reemplazar con URL de audio real
+                options: ['recieve', 'receive', 'receeve', 'recive'],
+                answer: 'receive',
+                level: 'intermediate'
+            },
+            {
+                type: 'text',
+                question: 'What is the comparative form of "good"?',
+                options: ['gooder', 'better', 'best', 'more good'],
+                answer: 'better',
+                level: 'intermediate'
+            },
+            {
+                type: 'text',
+                question: 'Identify the grammatical error in the sentence: Each student have their own book.',
+                options: ['have should be has', 'their should be his or her', 'book should be books', 'no error'],
+                answer: 'have should be has',
+                level: 'advanced'
+            },
+            {
+                type: 'text',
+                question: 'Choose the correct article: I saw _____ elephant at the zoo.',
+                options: ['a', 'an', 'the', '-'],
+                answer: 'an',
+                level: 'basic'
+            },
+            {
+                type: 'image',
+                question: 'What color is the object in the image?',
+                imageSrc: 'https://via.placeholder.com/100/0000FF', // Ejemplo de un objeto azul
+                options: ['red', 'blue', 'green', 'yellow'],
+                answer: 'blue',
+                level: 'basic'
+            },
+            {
+                type: 'audio',
+                question: 'Select the correct phrase you hear.',
+                audioSrc: '#', // Reemplazar con URL de audio real
+                options: ['How are you?', 'Where are you going?', 'What are you doing?', 'When will you arrive?'],
+                answer: 'What are you doing?',
+                level: 'intermediate'
+            },
+            {
+                type: 'text',
+                question: 'What is the superlative form of "bad"?',
+                options: ['badder', 'worse', 'worst', 'most bad'],
+                answer: 'worst',
+                level: 'intermediate'
+            },
+            {
+                type: 'text',
+                question: 'Which of the following is a phrasal verb meaning "to postpone"?',
+                options: ['look up', 'turn down', 'put off', 'take on'],
+                answer: 'put off',
+                level: 'advanced'
+            },
+             {
+                type: 'text',
+                question: 'Fill in the blank with the correct pronoun: _____ went to the market.',
+                options: ['Me', 'I', 'Myself', 'Mine'],
+                answer: 'I',
+                level: 'basic'
+            },
+            {
+                type: 'image',
+                question: 'Identify the vehicle in the image.',
+                imageSrc: 'https://via.placeholder.com/100/808080', // Ejemplo de un coche gris
+                options: ['bicycle', 'car', 'bus', 'train'],
+                answer: 'car',
+                level: 'basic'
+            },
+            {
+                type: 'audio',
+                question: 'Choose the number you hear.',
+                audioSrc: '#', // Reemplazar con URL de audio real
+                options: ['thirteen', 'thirty', 'fourteen', 'forty'],
+                answer: 'thirty',
+                level: 'intermediate'
+            },
+            {
+                type: 'text',
+                question: 'What is the adverb form of "quick"?',
+                options: ['quickly', 'quicker', 'quickest', 'quicking'],
+                answer: 'quickly',
+                level: 'intermediate'
+            },
+            {
+                type: 'text',
+                question: 'Choose the correct tense: She _____ to Paris last year.',
+                options: ['goes', 'went', 'gone', 'going'],
+                answer: 'went',
+                level: 'advanced'
+            },
+             {
+                type: 'text',
+                question: 'Select the correct conjunction: He likes tea _____ coffee.',
+                options: ['but', 'and', 'or', 'so'],
+                answer: 'and',
+                level: 'basic'
+            },
+            {
+                type: 'image',
+                question: 'What piece of clothing is shown?',
+                imageSrc: 'https://via.placeholder.com/100/A0522D', // Ejemplo de unos pantalones marrones
+                options: ['shirt', 'pants', 'dress', 'skirt'],
+                answer: 'pants',
+level: 'basic'
+            },
+            {
+                type: 'audio',
+                question: 'Pick the day of the week you hear.',
+                audioSrc: '#', // Reemplazar con URL de audio real
+                options: ['Monday', 'Tuesday', 'Wednesday', 'Thursday'],
+                answer: 'Wednesday',
+                level: 'intermediate'
+            },
+            {
+                type: 'text',
+                question: 'What is the past participle of "eat"?',
+                options: ['ate', 'eaten', 'eating', 'eats'],
+                answer: 'eaten',
+                level: 'intermediate'
+            },
+            {
+                type: 'text',
+                question: 'Identify the type of conditional sentence: If it rains, I will stay home.',
+                options: ['Zero Conditional', 'First Conditional', 'Second Conditional', 'Third Conditional'],
+                answer: 'First Conditional',
+                level: 'advanced'
+            },
+             {
+                type: 'text',
+                question: 'Choose the correct possessive pronoun: This book is _____ .',
+                options: ['my', 'mine', 'I', 'me'],
+                answer: 'mine',
+                level: 'basic'
+            },
+            {
+                type: 'image',
+                question: 'Recognize the building in the image.',
+                imageSrc: 'https://via.placeholder.com/100/D2691E', // Ejemplo de una casa marrón
+                options: ['house', 'school', 'hospital', 'store'],
+                answer: 'house',
+                level: 'basic'
+            },
+            {
+                type: 'audio',
+                question: 'Select the month you hear.',
+                audioSrc: '#', // Reemplazar con URL de audio real
+                options: ['January', 'February', 'March', 'April'],
+                answer: 'March',
+                level: 'intermediate'
+            },
+            {
+                type: 'text',
+                question: 'What is the superlative form of "easy"?',
+                options: ['easier', 'easyest', 'most easy', 'easiest'],
+                answer: 'easiest',
+                level: 'intermediate'
+            },
+            {
+                type: 'text',
+                question: 'Which sentence is in the passive voice?',
+                options: ['The dog chased the cat.', 'The cat was chased by the dog.', 'She is reading a book.', 'They will play soccer.'],
+                answer: 'The cat was chased by the dog.',
+                level: 'advanced'
+            }
+        ];
+
+        const questionsContainer = document.getElementById('questions-container');
+        const examForm = document.getElementById('exam-form');
+        const resultsContainer = document.getElementById('results-container');
+        const totalQuestionsSpan = document.getElementById('total-questions');
+        const correctAnswersSpan = document.getElementById('correct-answers');
+        const incorrectAnswersSpan = document.getElementById('incorrect-answers');
+        const levelSpan = document.getElementById('level');
+        const resultsChartCanvas = document.getElementById('results-chart');
+        const motivationMessage = document.getElementById('motivation-message');
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeIcon = document.getElementById('theme-icon');
+        const userInfoForm = document.getElementById('user-info-form');
+        const fullNameInput = document.getElementById('full-name');
+        const emailInput = document.getElementById('email');
+
+        let userAnswers = [];
+        let currentQuestionIndex = 0;
+        let correctCount = 0;
+
+        // Función para cargar las preguntas en el formulario
+        function loadQuestions() {
+            questionsData.forEach((question, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.classList.add('question-container', 'mb-4', 'lazy-load');
+                questionDiv.innerHTML = `<h5 class="mb-3 text-gray-800 dark:text-gray-100">${index + 1}. ${question.question}</h5>`;
+
+                const optionsContainer = document.createElement('div');
+                optionsContainer.classList.add('options-container');
+
+                if (question.type === 'image' && question.imageSrc) {
+                    const imageElement = document.createElement('img');
+                    imageElement.src = question.imageSrc;
+                    imageElement.classList.add('img-fluid', 'mb-2');
+                    questionDiv.appendChild(imageElement);
+                }
+
+                if (question.type === 'audio' && question.audioSrc) {
+                    const audioElement = document.createElement('audio');
+                    audioElement.src = question.audioSrc;
+                    audioElement.controls = true;
+                    audioElement.classList.add('mb-2');
+                    questionDiv.appendChild(audioElement);
+                }
+
+                question.options.forEach(option => {
+                    const label = document.createElement('label');
+                    label.classList.add('form-check-label');
+                    const input = document.createElement('input');
+                    input.type = 'radio';
+                    input.name = `question-${index}`;
+                    input.value = option;
+                    input.classList.add('form-check-input', 'me-2');
+                    label.appendChild(input);
+                    label.appendChild(document.createTextNode(option));
+                    optionsContainer.appendChild(label);
+                });
+
+                questionDiv.appendChild(optionsContainer);
+                questionsContainer.appendChild(questionDiv);
+            });
+
+            // Animación de carga lazy
+            gsap.from('.lazy-load', { opacity: 0, y: 20, stagger: 0.1, duration: 0.5, ease: 'power2.out', onComplete: () => {
+                const lazyElements = document.querySelectorAll('.lazy-load');
+                lazyElements.forEach(el => el.classList.add('loaded'));
+            }});
+        }
+
+        // Función para obtener las respuestas del usuario
+        function getUserAnswers() {
+            const answers = [];
+            questionsData.forEach((question, index) => {
+                const selectedOption = document.querySelector(`input[name="question-${index}"]:checked`);
+                answers.push(selectedOption ? selectedOption.value : null);
+            });
+            return answers;
+        }
+
+        // Función para calcular los resultados
+        function calculateResults(answers) {
+            correctCount = 0;
+            answers.forEach((answer, index) => {
+                if (answer === questionsData[index].answer) {
+                    correctCount++;
+                    const questionDiv = questionsContainer.children[index];
+                    const options = questionDiv.querySelectorAll('input[type="radio"]');
+                    options.forEach(option => {
+                        if (option.value === answer) {
+                            const feedback = document.createElement('span');
+                            feedback.classList.add('feedback-correct', 'ms-2');
+                            feedback.innerHTML = '<i class="fas fa-check-circle"></i> Correct';
+                            option.parentNode.appendChild(feedback);
+                        }
+                    });
+                } else if (answer) {
+                    const questionDiv = questionsContainer.children[index];
+                    const options = questionDiv.querySelectorAll('input[type="radio"]');
+                    options.forEach(option => {
+                        if (option.value === answer) {
+                            const feedback = document.createElement('span');
+                            feedback.classList.add('feedback-incorrect', 'ms-2');
+                            feedback.innerHTML = '<i class="fas fa-times-circle"></i> Incorrect';
+                            option.parentNode.appendChild(feedback);
+                        }
+                        if (option.value === questionsData[index].answer) {
+                            const feedbackCorrect = document.createElement('span');
+                            feedbackCorrect.classList.add('feedback-correct', 'ms-2');
+                            feedbackCorrect.innerHTML = `<i class="fas fa-check-circle"></i> Correct: ${questionsData[index].answer}`;
+                            option.parentNode.appendChild(feedbackCorrect);
+                        }
+                    });
+                } else {
+                    const questionDiv = questionsContainer.children[index];
+                    const options = questionDiv.querySelectorAll('input[type="radio"]');
+                    options.forEach(option => {
+                        if (option.value === questionsData[index].answer) {
+                            const feedbackCorrect = document.createElement('span');
+                            feedbackCorrect.classList.add('feedback-correct', 'ms-2');
+                            feedbackCorrect.innerHTML = `<i class="fas fa-exclamation-circle"></i> Not Answered, Correct: ${questionsData[index].answer}`;
+                            option.parentNode.appendChild(feedbackCorrect);
+                        }
+                    });
+                }
+            });
+
+            const totalQuestions = questionsData.length;
+            const incorrectCount = totalQuestions - correctCount;
+            const percentage = (correctCount / totalQuestions) * 100;
+            let level = 'Beginner';
+            if (percentage >= 50 && percentage < 80) {
+                level = 'Intermediate';
+            } else if (percentage >= 80) {
+                level = 'Advanced';
+            }
+
+            totalQuestionsSpan.textContent = totalQuestions;
+            correctAnswersSpan.textContent = correctCount;
+            incorrectAnswersSpan.textContent = incorrectCount;
+            levelSpan.textContent = level;
+
+            motivationMessage.textContent = getMotivationMessage(percentage);
+            displayResultsChart(correctCount, incorrectCount);
+            resultsContainer.style.display = 'block';
+            examForm.style.display = 'none';
+        }
+
+        // Función para generar un mensaje de motivación basado en el porcentaje
+        function getMotivationMessage(percentage) {
+            if (percentage < 40) {
+                return 'Keep practicing! Every effort counts towards improvement.';
+            } else if (percentage < 70) {
+                return 'Good job! You are making progress. Continue to learn and grow.';
+            } else if (percentage < 90) {
+                return 'Excellent! Your English skills are strong. Keep challenging yourself.';
+            } else {
+                return 'Outstanding! You have a very high level of English proficiency.';
+            }
+        }
+
+        // Función para mostrar el gráfico de resultados
+        function displayResultsChart(correct, incorrect) {
+            new Chart(resultsChartCanvas, {
+                type: 'pie',
+                data: {
+                    labels: ['Correct Answers', 'Incorrect Answers'],
+                    datasets: [{
+                        data: [correct, incorrect],
+                        backgroundColor: ['#28a745', '#dc3545'],
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: document.body.classList.contains('dark-mode') ? '#e2e8f0' : '#495057'
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.label || '';
+                                    if (context.parsed !== null) {
+                                        label += `: ${context.parsed} (${((context.parsed / (correct + incorrect)) * 100).toFixed(2)}%)`;
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Evento para enviar el formulario
+        examForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            const answers = getUserAnswers();
+            calculateResults(answers);
+        });
+
+        // Función para descargar los resultados como CSV
+        function downloadCSV() {
+            const totalQuestions = questionsData.length;
+            const correctAnswers = correctCount;
+            const incorrectAnswers = totalQuestions - correctAnswers;
+            const level = levelSpan.textContent;
+            const fullName = fullNameInput.value || 'N/A';
+            const email = emailInput.value || 'N/A';
+
+            let csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += "Full Name,Email,Total Questions,Correct Answers,Incorrect Answers,Level\r\n";
+            csvContent += `${fullName},${email},${totalQuestions},${correctAnswers},${incorrectAnswers},${level}\r\n`;
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "exam_results.csv");
+            document.body.appendChild(link); // Required for Firefox
+
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Función para descargar el gráfico como PNG
+        function downloadChart() {
+            const link = document.createElement('a');
+            link.download = 'exam_results_chart.png';
+            link.href = resultsChartCanvas.toDataURL('image/png');
+            link.click();
+        }
+
+        // Función para enviar los resultados por correo electrónico (simulado, necesitaría backend real)
+        function sendResultsByEmail() {
+            const fullName = fullNameInput.value;
+            const email = emailInput.value;
+            const totalQuestions = questionsData.length;
+            const correctAnswers = correctCount;
+            const incorrectAnswers = totalQuestions - correctAnswers;
+            const level = levelSpan.textContent;
+
+            if (!fullName || !email) {
+                alert('Please enter your full name and email address to send the results.');
+                return;
+            }
+
+            const subject = 'English Evaluation Exam Results';
+            const body = `Dear ${fullName},\n\nThank you for completing the English Evaluation Exam.\n\nHere are your results:\nTotal Questions: ${totalQuestions}\nCorrect Answers: ${correctAnswers}\nIncorrect Answers: ${incorrectAnswers}\nLevel: ${level}\n\nWe hope this feedback is helpful.\n\nSincerely,\nThe English Exam Team`;
+
+            // This is a client-side alert. For real email sending, you would need a backend service.
+            alert(`Results will be sent to: ${email}\n\nSubject: ${subject}\n\nBody:\n${body}`);
+            // In a real application, you would use an AJAX request to send this data to a server
+            // which would then use an email service to send the email.
+        }
+
+        // Función para descargar el HTML completo
+        function downloadHTML() {
+            const htmlContent = document.documentElement.outerHTML;
+            const blob = new Blob([htmlContent], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'english_exam.html';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // Dark/Light Mode Toggle
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            themeIcon.classList.toggle('fa-sun');
+            themeIcon.classList.toggle('fa-moon');
+            // Recargar el gráfico para que los colores se ajusten al tema
+            const chart = Chart.getChart(resultsChartCanvas);
+            if (chart) {
+                chart.options.plugins.legend.labels.color = document.body.classList.contains('dark-mode') ? '#e2e8f0' : '#495057';
+                chart.update();
+            }
+        });
+
+        // Inicializar las preguntas al cargar la página
+        loadQuestions();
+    </script>
+</body>
+</html>
