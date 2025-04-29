@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evaluación Profesional de Nivel de Inglés (MCER)</title> <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap'); /* Example: Using Lato font */
+
+        :root {
+            /* Professional Color Palette (Light Mode) */
+            --primary-color: #4a6fa5; /* Steel Blue / Slate Blue */
+            --secondary-color: #6c757d; /* Medium Grey */
+            --background-color: #f4f7f6; /* Very Light Grey/Off-white */
+            --card-bg: #ffffff; /* White */
+            --text-color: #343a40; /* Dark Grey */
+            --border-color: #dee2e6; /* Light Grey Border */
+            --success-color: #28a745; /* Standard Green */
+            --danger-color: #dc3545; /* Standard Red */
+            --warning-color: #ffc107; /* Standard Yellow */
+            --info-color: #17a2b8; /* Standard Teal */
+
+            --chart-correct: rgba(40, 167, 69, 0.85); /* Slightly darker green */
+            --chart-incorrect: rgba(220, 53, 69, 0.85); /* Standard red */
+            --chart-border-color: #ffffff;
+
+            --font-family-sans-serif: 'Lato', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+             --box-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+             --box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+             --border-radius: 0.375rem; /* Slightly larger radius */
+        }
+
+        body {
+            font-family: var(--font-family-sans-serif);
+            background-color: var(--background-color);
+            color: var(--text-color);
+            transition: background-color 0.3s ease, color 0.3s ease;
+            font-size: 16px; /* Base font size */
+            line-height: 1.6;
+        }
+
+        body.dark-mode {
+            /* Professional Color Palette (Dark Mode) */
+            --primary-color: #5a9bd3; /* Lighter Steel Blue for accents */
+            --secondary-color: #adb5bd; /* Lighter Grey */
+            --background-color: #2c3e50; /* Dark Slate Blue/Grey */
+            --card-bg: #34495e; /* Slightly Lighter Dark Slate */
+            --text-color: #ecf0f1; /* Light Grey/Off-white Text */
+            --border-color: #4a6fa5; /* Using primary as border */
+            --success-color: #2ecc71; /* Emerald Green */
+            --danger-color: #e74c3c; /* Alizarin Red */
+             --warning-color: #f39c12; /* Orange */
+             --info-color: #3498db; /* Peter River Blue */
+
+            --chart-correct: rgba(46, 204, 113, 0.85); /* Emerald */
+            --chart-incorrect: rgba(231, 76, 60, 0.85); /* Alizarin */
+            --chart-border-color: #34495e; /* Card background */
+
+             --box-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.15);
+             --box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-weight: 700;
+            color: var(--text-color); /* Ensure headings use theme text color */
+        }
+
+        h1 { font-size: 2.2rem; }
+        h2 { font-size: 1.8rem; }
+        h5.card-title { font-size: 1.25rem; font-weight: 700; } /* Question title */
+
+        .quiz-container, .results-container {
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 2.5rem; /* Increased padding */
+            box-shadow: var(--box-shadow);
+            margin-top: 2rem;
+            border: 1px solid var(--border-color);
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        .question-card {
+            border: none;
+            background-color: transparent;
+        }
+
+        .question-image {
+            max-width: 100%;
+            height: auto;
+            max-height: 280px; /* Slightly taller max height */
+            display: block;
+            margin: 1.5rem auto; /* More margin */
+            border-radius: var(--border-radius);
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+            background-color: #e0e0e0; /* Grey placeholder background */
+            border: 1px solid var(--border-color);
+        }
+        body.dark-mode .question-image { background-color: #4b6580; }
+
+        .question-image.lazyloaded {
+            opacity: 1;
+        }
+
+        .option-btn {
+            display: flex; /* Use flex for alignment */
+            align-items: center;
+            width: 100%;
+            margin-bottom: 0.8rem;
+            text-align: left;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: 0.85rem 1.35rem; /* Adjusted padding */
+            font-size: 1rem;
+            transition: all 0.2s ease-out; /* Smooth transition for multiple properties */
+            box-shadow: var(--box-shadow-sm);
+        }
+        .option-btn:hover {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+            transform: translateY(-2px); /* Subtle lift effect */
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .option-btn.selected {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+            font-weight: 700;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+        }
+        .option-btn .option-letter { /* Style the A. B. C. D. */
+             display: inline-block;
+             min-width: 20px; /* Ensure alignment */
+             margin-right: 10px;
+             font-weight: 700;
+             color: var(--primary-color);
+        }
+        .option-btn.selected .option-letter {
+             color: white; /* Change letter color on selection */
+        }
+        .option-btn i { /* Feedback icon */
+            margin-left: auto; /* Push icon to the right */
+            font-size: 1.1em;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .option-btn.selected i {
+            opacity: 1;
+        }
+
+        /* Button Styles */
+        .btn {
+            padding: 0.6rem 1.2rem;
+            font-weight: 700;
+            border-radius: var(--border-radius);
+            transition: all 0.2s ease-out;
+            box-shadow: var(--box-shadow-sm);
+            border-width: 1px; /* Ensure border always shows */
+        }
+        .btn:hover {
+             transform: translateY(-2px);
+             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .btn-primary { background-color: var(--primary-color); border-color: var(--primary-color); }
+        .btn-secondary { background-color: var(--secondary-color); border-color: var(--secondary-color); color: white; }
+        .btn-success { background-color: var(--success-color); border-color: var(--success-color); color: white; }
+        .btn-info { background-color: var(--info-color); border-color: var(--info-color); color: white; }
+        .btn-outline-primary { color: var(--primary-color); border-color: var(--primary-color); }
+        .btn-outline-primary:hover { background-color: var(--primary-color); color: white; }
+        .btn-outline-secondary { color: var(--secondary-color); border-color: var(--secondary-color); }
+        .btn-outline-secondary:hover { background-color: var(--secondary-color); color: white; }
+
+        body.dark-mode .btn-secondary { background-color: #5a6268; border-color: #5a6268;} /* Darker grey for dark mode secondary */
+        body.dark-mode .btn-outline-primary { color: var(--primary-color); border-color: var(--primary-color); }
+        body.dark-mode .btn-outline-primary:hover { background-color: var(--primary-color); color: var(--text-color); } /* Adjust hover text color */
+        body.dark-mode .btn-outline-secondary { color: var(--secondary-color); border-color: var(--secondary-color); }
+        body.dark-mode .btn-outline-secondary:hover { background-color: var(--secondary-color); color: #343a40; }
+
+        #results-chart-container { /* Same as before, works well */
+            position: relative;
+            height: 0;
+            padding-bottom: 80%;
+            max-width: 450px; /* Slightly larger max width */
+            margin: 3rem auto;
+        }
+        #results-chart {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+        }
+
+        /* Results Summary Cards */
+        .results-summary-card {
+            border: 1px solid var(--border-color);
+            box-shadow: var(--box-shadow-sm);
+            transition: all 0.3s ease;
+        }
+        .results-summary-card .card-title {
+             font-weight: 700;
+             font-size: 1.1rem;
+             margin-bottom: 0.5rem;
+        }
+        .results-summary-card .card-text {
+            font-size: 2.5rem; /* Larger score/level display */
+            font-weight: 700;
+             margin-bottom: 0;
+        }
+        .results-summary-card.correct { border-left: 5px solid var(--success-color); }
+        .results-summary-card.incorrect { border-left: 5px solid var(--danger-color); }
+        .results-summary-card.level { border-left: 5px solid var(--primary-color); }
+
+
+        /* Accessibility */
+        *:focus-visible {
+            outline: 3px solid var(--primary-color);
+            outline-offset: 3px;
+            box-shadow: 0 0 0 4px rgba(var(--bs-primary-rgb, 74, 111, 165), 0.3); /* Use RGB version of primary */
+        }
+
+
+        /* Dark mode toggle */
+        #darkModeToggle {
+            cursor: pointer;
+            font-size: 1.6rem; /* Slightly larger icon */
+            color: var(--text-color);
+            transition: color 0.3s ease, transform 0.3s ease;
+        }
+        #darkModeToggle:hover {
+            transform: scale(1.1); /* Slight scale on hover */
+        }
+        #darkModeToggle::after { /* Tooltip styling adjusted */
+             background-color: var(--text-color);
+             color: var(--background-color);
+             padding: 5px 10px;
+             border-radius: 4px;
+             font-size: 0.8rem;
+             box-shadow: var(--box-shadow-sm);
+             /* Rest remains similar */
+             content: attr(aria-label); position: absolute; bottom: -35px; left: 50%; transform: translateX(-50%); white-space: nowrap; opacity: 0; visibility: hidden; transition: opacity 0.2s ease, visibility 0.2s ease; z-index: 10;
+        }
+        #darkModeToggle:hover::after, #darkModeToggle:focus-visible::after { opacity: 1; visibility: visible; }
+
+        /* Form section styling */
+        #user-info-section {
+             background-color: var(--background-color); /* Use main background */
+             border: 1px solid var(--border-color);
+             border-radius: var(--border-radius);
+             padding: 2rem; /* More padding */
+             box-shadow: var(--box-shadow-sm);
+             margin-top: 3rem; /* More space above form */
+        }
+         body.dark-mode #user-info-section { background-color: var(--card-bg); } /* Use card bg in dark mode */
+
+        /* Footer */
+        footer { border-top: 1px solid var(--border-color); padding-top: 1.5rem; }
+
+        /* Animations */
+        .fade-in { animation: fadeIn 0.6s ease-out forwards; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+    </style>
+</head>
+<body>
+
+    <header class="container mt-4 mb-4"> <div class="d-flex justify-content-between align-items-center flex-wrap gap-3"> <h1 class="mb-0"><i class="fas fa-graduation-cap text-primary me-2"></i>Evaluación Profesional de Inglés (MCER)</h1>
+            <div class="position-relative">
+                <i id="darkModeToggle" class="fas fa-moon" role="button" tabindex="0" aria-label="Cambiar modo claro/oscuro"></i>
+            </div>
+        </div>
+        <hr class="mt-3"> </header>
+
+    <main class="container">
+        <section id="quiz-section" class="quiz-container">
+            <div id="question-container" class="card question-card mb-4" aria-live="polite"> </div>
+            <div id="navigation-buttons" class="d-flex justify-content-between align-items-center pt-3 border-top"> <button id="prev-btn" class="btn btn-secondary" aria-label="Pregunta anterior" disabled>
+                    <i class="fas fa-arrow-left me-1"></i> Anterior
+                </button>
+                 <span id="question-counter" class="text-muted fw-bold mx-3">Pregunta 1 / 50</span> <button id="next-btn" class="btn btn-primary" aria-label="Siguiente pregunta">
+                    Siguiente <i class="fas fa-arrow-right ms-1"></i>
+                </button>
+                <button id="submit-btn" class="btn btn-success" style="display: none;" aria-label="Enviar examen">
+                    Finalizar <i class="fas fa-check-circle ms-1"></i>
+                </button>
+            </div>
+        </section>
+
+        <section id="results-section" class="results-container" style="display: none;"> <h2 class="text-center mb-5">Resultados de la Evaluación</h2> <div id="results-summary" class="text-center">
+                 <div id="motivational-message" class="alert fs-5 mb-5" role="alert" aria-live="polite">
+                     </div>
+
+                 <div class="row justify-content-center g-4 mb-5"> <div class="col-md-4">
+                         <div class="card results-summary-card correct h-100">
+                             <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                                 <h5 class="card-title text-success mb-2"><i class="fas fa-check me-2"></i>Correctas</h5>
+                                 <p class="card-text text-success" id="correct-count">0</p>
+                             </div>
+                         </div>
+                      </div>
+                      <div class="col-md-4">
+                          <div class="card results-summary-card incorrect h-100">
+                             <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                                 <h5 class="card-title text-danger mb-2"><i class="fas fa-times me-2"></i>Incorrectas</h5>
+                                 <p class="card-text text-danger" id="incorrect-count">0</p>
+                             </div>
+                         </div>
+                      </div>
+                       <div class="col-md-4">
+                          <div class="card results-summary-card level h-100">
+                             <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                                 <h5 class="card-title text-primary mb-2"><i class="fas fa-layer-group me-2"></i>Nivel MCER</h5>
+                                 <p class="card-text text-primary" id="level">N/A</p>
+                             </div>
+                         </div>
+                      </div>
+                 </div>
+
+
+                <div id="results-chart-container">
+                    <canvas id="results-chart"></canvas>
+                </div>
+            </div>
+
+             <div id="user-info-section"> <h3 class="text-center mb-4">Guardar o Enviar Resultados</h3>
+                 <p class="text-center text-muted small mb-4">Opcional: Ingresa tus datos para recibir un borrador de correo.</p>
+                <form id="user-info-form">
+                    <div class="mb-3">
+                        <label for="fullName" class="form-label fw-bold">Nombre Completo</label>
+                        <input type="text" class="form-control form-control-lg" id="fullName" placeholder="Tu nombre completo" aria-required="true" required>
+                    </div>
+                    <div class="mb-4">
+                        <label for="email" class="form-label fw-bold">Correo Electrónico</label>
+                        <input type="email" class="form-control form-control-lg" id="email" placeholder="tu.correo@ejemplo.com" aria-required="true" required>
+                         <div id="emailHelp" class="form-text mt-2">Formatearemos un borrador en tu cliente de correo predeterminado.</div>
+                    </div>
+                    <button type="submit" class="btn btn-info btn-lg w-100"> <i class="fas fa-envelope me-2"></i> Preparar Correo
+                    </button>
+                     <p class="text-center small mt-3 text-muted">Nota: Se requiere un servidor backend para envío directo.</p>
+                </form>
+            </div>
+
+            <div id="action-buttons" class="mt-5 d-flex flex-wrap justify-content-center gap-3"> <button id="download-csv-btn" class="btn btn-outline-secondary">
+                    <i class="fas fa-file-csv me-1"></i> Descargar Resumen (CSV)
+                </button>
+                <button id="download-png-btn" class="btn btn-outline-secondary">
+                    <i class="fas fa-image me-1"></i> Descargar Gráfico (PNG)
+                </button>
+                 <button id="retake-btn" class="btn btn-outline-primary">
+                    <i class="fas fa-redo me-1"></i> Repetir Evaluación
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="container text-center mt-5 mb-4"> <p class="text-muted">&copy; <span id="current-year"></span> Tu Nombre/Organización. Todos los derechos reservados.</p>
+         <p class="small text-muted">Resultados indicativos basados en MCER. Se recomienda una evaluación formal para certificación.</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js" integrity="sha256-R4pqcOYV8lt7snxMQO/HSbVCFRPMdrhAFMH+vrG4FMk=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" integrity="sha512-7eHRwcbYkK4d9g/6tD/mhkf++eoTHwpNM9woBxtPUBWm67zeAfFC+HrdoE2GanKeocly/VxeLvIqwvCdk7qScg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // --- Configuration & Data ---
+
+            // --- 50 QUESTIONS ARRAY (MCER Aligned) ---
+            const questions = [
+                 // --- A1 Level --- (Focus: Basic recognition, 'be', 'have', simple nouns/adjectives)
+                 { // 1 (A1 - Text - Be)
+                    type: 'text',
+                    question: "She ___ a student.",
+                    options: ["am", "is", "are", "be"],
+                    correctAnswer: "is",
+                    difficulty: 'A1'
+                },
+                { // 2 (A1 - Image - Object ID)
+                    type: 'image',
+                    question: "What is this?",
+                    imageSrc: "https://via.placeholder.com/350x200/e0e0e0/777777?text=Placeholder+(Book)",
+                    imageAlt: "A book",
+                    options: ["Pen", "Book", "Desk", "Chair"],
+                    correctAnswer: "Book",
+                    difficulty: 'A1'
+                },
+                 { // 3 (A1 - Text - Basic Vocab)
+                    type: 'text',
+                    question: "The opposite of 'big' is ___.",
+                    options: ["small", "tall", "long", "fast"],
+                    correctAnswer: "small",
+                    difficulty: 'A1'
+                },
+                 { // 4 (A1 - Text - Plural)
+                    type: 'text',
+                    question: "How many cats? 'One cat, three ___.'",
+                    options: ["cat", "cates", "cats", "caties"],
+                    correctAnswer: "cats",
+                    difficulty: 'A1'
+                },
+                { // 5 (A1 - Image - Color ID)
+                    type: 'image',
+                    question: "What color is the apple?",
+                    imageSrc: "https://via.placeholder.com/350x200/e74c3c/ffffff?text=Placeholder+(Red+Apple)", // Red color
+                    imageAlt: "A red apple",
+                    options: ["Green", "Yellow", "Blue", "Red"],
+                    correctAnswer: "Red",
+                    difficulty: 'A1'
+                },
+                // --- A2 Level --- (Focus: Simple descriptions, past simple, present continuous, basic comparatives)
+                { // 6 (A2 - Text - Present Continuous)
+                    type: 'text',
+                    question: "Look! The children ___ in the park.",
+                    options: ["play", "is playing", "are playing", "plays"],
+                    correctAnswer: "are playing",
+                    difficulty: 'A2'
+                },
+                { // 7 (A2 - Text - Past Simple Irreg)
+                    type: 'text',
+                    question: "I ___ a delicious pizza yesterday.",
+                    options: ["eat", "eats", "eated", "ate"],
+                    correctAnswer: "ate",
+                    difficulty: 'A2'
+                },
+                 { // 8 (A2 - Image - Action ID)
+                    type: 'image',
+                    question: "What is the man doing?",
+                    imageSrc: "https://via.placeholder.com/350x200/e0e0e0/777777?text=Placeholder+(Man+Reading)",
+                    imageAlt: "A man reading a newspaper",
+                    options: ["Sleeping", "Reading", "Cooking", "Driving"],
+                    correctAnswer: "Reading",
+                    difficulty: 'A2'
+                },
+                 { // 9 (A2 - Text - Basic Comparative)
+                    type: 'text',
+                    question: "My house is ___ than yours.",
+                    options: ["smaller", "more small", "small", "smallest"],
+                    correctAnswer: "smaller",
+                    difficulty: 'A2'
+                },
+                 { // 10 (A2 - Text - Preposition of Place)
+                    type: 'text',
+                    question: "The cat is sleeping ___ the sofa.",
+                    options: ["at", "on", "in", "to"],
+                    correctAnswer: "on",
+                    difficulty: 'A2'
+                },
+                 { // 11 (A2 - Text - 'Can' for ability)
+                    type: 'text',
+                    question: "She ___ speak three languages.",
+                    options: ["is", "has", "can", "does"],
+                    correctAnswer: "can",
+                    difficulty: 'A2'
+                },
+                 { // 12 (A2 - Image - Location/Place ID)
+                    type: 'image',
+                    question: "Where are they?",
+                    imageSrc: "https://via.placeholder.com/350x200/e0e0e0/777777?text=Placeholder+(Beach+Scene)",
+                    imageAlt: "People on a beach with sand and sea",
+                    options: ["In the mountains", "At the beach", "In a forest", "In a city"],
+                    correctAnswer: "At the beach",
+                    difficulty: 'A2'
+                },
+                // --- B1 Level --- (Focus: Experiences, plans, opinions, present perfect, past continuous, conditionals 1, passive simple)
+                { // 13 (B1 - Text - Present Perfect - Experience)
+                    type: 'text',
+                    question: "___ you ever ___ sushi?",
+                    options: ["Did / eat", "Have / eaten", "Has / eaten", "Do / eat"],
+                    correctAnswer: "Have / eaten",
+                    difficulty: 'B1'
+                },
+                 { // 14 (B1 - Text - Past Continuous vs Simple)
+                    type: 'text',
+                    question: "I was watching TV when the phone ___.",
+                    options: ["ring", "was ringing", "rang", "rung"],
+                    correctAnswer: "rang",
+                    difficulty: 'B1'
+                },
+                { // 15 (B1 - Image - Describe Situation/Problem)
+                    type: 'image',
+                    question: "What problem might this person have?",
+                    imageSrc: "https://via.placeholder.com/350x200/e0e0e0/777777?text=Placeholder+(Flat+Tire)",
+                    imageAlt: "A car with a flat tire on the side of the road",
+                    options: ["Ran out of gas", "Engine failure", "A flat tire", "Lost keys"],
+                    correctAnswer: "A flat tire",
+                    difficulty: 'B1'
+                },
+                 { // 16 (B1 - Text - 'Going to' Future Plans)
+                    type: 'text',
+                    question: "We ___ visit our grandparents next weekend.",
+                    options: ["will", "are going to", "visit", "visited"],
+                    correctAnswer: "are going to",
+                    difficulty: 'B1'
+                },
+                 { // 17 (B1 - Text - Conditional Type 1)
+                    type: 'text',
+                    question: "If it ___, we will stay at home.",
+                    options: ["rain", "rains", "will rain", "rained"],
+                    correctAnswer: "rains",
+                    difficulty: 'B1'
+                },
+                 { // 18 (B1 - Text - Passive Simple)
+                    type: 'text',
+                    question: "This book ___ by a famous author.",
+                    options: ["wrote", "writes", "was written", "is writing"],
+                    correctAnswer: "was written",
+                    difficulty: 'B1'
+                },
+                 { // 19 (B1 - Text - Giving Advice - Should)
+                    type: 'text',
+                    question: "You look tired. You ___ get some rest.",
+                    options: ["must", "can", "should", "have"],
+                    correctAnswer: "should",
+                    difficulty: 'B1'
+                },
+                 { // 20 (B1 - Image - Sequence/Order)
+                    type: 'image',
+                    question: "What is the first step in the image sequence?",
+                    imageSrc: "https://via.placeholder.com/350x200/e0e0e0/777777?text=Placeholder+(Steps:+1.Flour+2.Mix+3.Bake)",
+                    imageAlt: "Sequence showing flour, then mixing, then baking",
+                    options: ["Mixing ingredients", "Baking the cake", "Adding flour", "Decorating the cake"],
+                    correctAnswer: "Adding flour",
+                    difficulty: 'B1'
+                },
+                 { // 21 (B1 - Text - Relative Clause 'who/which/that')
+                    type: 'text',
+                    question: "That's the man ___ helped me yesterday.",
+                    options: ["which", "who", "whose", "what"],
+                    correctAnswer: "who",
+                    difficulty: 'B1'
+                },
+                 { // 22 (B1 - Text - Vocabulary: Travel)
+                    type: 'text',
+                    question: "A place where you wait for a bus is called a ___.",
+                    options: ["train station", "bus stop", "airport", "harbour"],
+                    correctAnswer: "bus stop",
+                    difficulty: 'B1'
+                },
+                // --- B2 Level --- (Focus: Complex ideas, fluency, reported speech, conditionals 2/3, passives, modals deduction)
+                { // 23 (B2 - Text - Conditional Type 2)
+                    type: 'text',
+                    question: "If I ___ more money, I would buy a new car.",
+                    options: ["have", "had", "would have", "will have"],
+                    correctAnswer: "had",
+                    difficulty: 'B2'
+                },
+                 { // 24 (B2 - Text - Past Perfect)
+                    type: 'text',
+                    question: "She realised she ___ her keys at home.",
+                    options: ["left", "was leaving", "had left", "has left"],
+                    correctAnswer: "had left",
+                    difficulty: 'B2'
+                },
+                 { // 25 (B2 - Text - Reported Speech Statement)
+                    type: 'text',
+                    question: "He told me he ___ very busy that day.",
+                    options: ["is", "was", "has been", "had been"],
+                    correctAnswer: "was", // Or 'had been' depending on original tense, 'was' is common shift from present
+                    difficulty: 'B2'
+                },
+                 { // 26 (B2 - Image - Infer Emotion/Attitude)
+                    type: 'image',
+                    question: "How does the person in the image probably feel?",
+                    imageSrc: "https://via.placeholder.com/350x200/e0e0e0/777777?text=Placeholder+(Frustrated+Person)",
+                    imageAlt: "Person looking frustrated, maybe head in hands",
+                    options: ["Joyful", "Relaxed", "Frustrated", "Indifferent"],
+                    correctAnswer: "Frustrated",
+                    difficulty: 'B2'
+                },
+                 { // 27 (B2 - Text - Passive (Present Perfect))
+                    type: 'text',
+                    question: "The report ___ just ___ by the committee.",
+                    options: ["has / finished", "have / been finished", "has / been finished", "was / finished"],
+                    correctAnswer: "has / been finished",
+                    difficulty: 'B2'
+                },
+                 { // 28 (B2 - Text - Modal of Deduction (Past))
+                    type: 'text',
+                    question: "The lights are off. They ___ gone out.",
+                    options: ["must have", "should have", "might", "can't"],
+                    correctAnswer: "must have",
+                    difficulty: 'B2'
+                },
+                { // 29 (B2 - Text - Phrasal Verb (Common))
+                    type: 'text',
+                    question: "I need to ___ smoking; it's bad for my health.",
+                    options: ["give up", "look after", "take off", "get on"],
+                    correctAnswer: "give up",
+                    difficulty: 'B2'
+                },
+                { // 30 (B2 - Text - Vocabulary: Work/Study)
+                    type: 'text',
+                    question: "The deadline for the project is next Friday. We need to finish it ___ then.",
+                    options: ["until", "by", "since", "for"],
+                    correctAnswer: "by",
+                    difficulty: 'B2'
+                },
+                 { // 31 (B2 - Image - Compare/Contrast)
+                    type: 'image',
+                    question: "What is the main difference between the two items shown?",
+                    imageSrc: "https://via.placeholder.com/350x200/e0e0e0/777777?text=Placeholder+(Laptop+vs+Tablet)",
+                    imageAlt: "A laptop computer and a tablet device",
+                    options: ["Screen size", "Portability/Keyboard", "Color", "Price"],
+                    correctAnswer: "Portability/Keyboard", // Assumes typical difference
+                    difficulty: 'B2'
+                },
+                 { // 32 (B2 - Text - Conditional Type 3)
+                    type: 'text',
+                    question: "If I had known you were coming, I ___ a cake.",
+                    options: ["would bake", "baked", "will bake", "would have baked"],
+                    correctAnswer: "would have baked",
+                    difficulty: 'B2'
+                },
+                 { // 33 (B2 - Text - Gerund vs Infinitive)
+                    type: 'text',
+                    question: "I enjoy ___ books in my free time.",
+                    options: ["read", "to read", "reading", "to reading"],
+                    correctAnswer: "reading",
+                    difficulty: 'B2'
+                },
+                // --- C1 Level --- (Focus: Fluency, nuance, complex structures, idioms, academic/professional vocab)
+                { // 34 (C1 - Text - Advanced Idiom)
+                    type: 'text',
+                    question: "If something costs 'an arm and a leg', it is very ___.",
+                    options: ["cheap", "heavy", "old", "expensive"],
+                    correctAnswer: "expensive",
+                    difficulty: 'C1'
+                },
+                { // 35 (C1 - Text - Inversion after Negative Adverbial)
+                    type: 'text',
+                    question: "Hardly ___ arrived when the problems started.",
+                    options: ["had I", "I had", "did I", "I did"],
+                    correctAnswer: "had I",
+                    difficulty: 'C1'
+                },
+                 { // 36 (C1 - Text - Nuance: Vocabulary Choice)
+                    type: 'text',
+                    question: "The findings of the study were quite ___; several results were unexpected.",
+                    options: ["revealing", "mundane", "predictable", "negligible"],
+                    correctAnswer: "revealing",
+                    difficulty: 'C1'
+                },
+                { // 37 (C1 - Image - Infer Purpose/Context)
+                    type: 'image',
+                    question: "In which context would you most likely see this sign?",
+                    imageSrc: "https://via.placeholder.com/350x200/e0e0e0/777777?text=Placeholder+(No+Smoking+Sign)",
+                    imageAlt: "Standard 'No Smoking' symbol",
+                    options: ["A library", "A park", "A restaurant patio", "Inside a public building"],
+                    correctAnswer: "Inside a public building", // Most common strict context
+                    difficulty: 'C1'
+                },
+                { // 38 (C1 - Text - Advanced Passive / Causative Have)
+                    type: 'text',
+                    question: "I need to ___ my car ___ before the long trip.",
+                    options: ["have / serviced", "service / have", "be / serviced", "have / service"],
+                    correctAnswer: "have / serviced",
+                    difficulty: 'C1'
+                },
+                { // 39 (C1 - Text - Collocation (Verb+Noun))
+                    type: 'text',
+                    question: "It's important to ___ attention during the lecture.",
+                    options: ["give", "pay", "take", "do"],
+                    correctAnswer: "pay",
+                    difficulty: 'C1'
+                },
+                { // 40 (C1 - Text - Complex Conjunctions/Linking Words)
+                    type: 'text',
+                    question: "___ the weather was bad, they decided to go hiking anyway.",
+                    options: ["Despite", "Although", "However", "Because"],
+                    correctAnswer: "Although", // Or Despite the bad weather,...
+                    difficulty: 'C1'
+                },
+                { // 41 (C1 - Text - Formal Vocabulary)
+                    type: 'text',
+                    question: "The committee decided to ___ the meeting until next week.",
+                    options: ["put off", "call off", "postpone", "bring forward"],
+                    correctAnswer: "postpone",
+                    difficulty: 'C1'
+                },
+                { // 42 (C1 - Image - Interpret Graph/Chart Data)
+                    type: 'image',
+                    question: "According to the graph, which year had the highest sales?",
+                    imageSrc: "https://via.placeholder.com/350x200/e0e0e0/777777?text=Placeholder+(Simple+Bar+Chart)",
+                    imageAlt: "Bar chart showing sales over several years, one year clearly highest",
+                    options: ["2020", "2021", "2022", "2023"], // Example years, answer depends on placeholder visual
+                    correctAnswer: "2022", // Placeholder answer - **MUST BE CHECKED AGAINST ACTUAL VISUAL**
+                    difficulty: 'C1'
+                },
+                 { // 43 (C1 - Text - Mixed Conditional)
+                    type: 'text',
+                    question: "If he hadn't missed the train, he ___ here now.",
+                    options: ["would be", "would have been", "will be", "is"],
+                    correctAnswer: "would be",
+                    difficulty: 'C1'
+                },
+                // --- C2 Level --- (Focus: Precision, nuance, advanced/rare idioms, complex structures, register)
+                { // 44 (C2 - Text - Fine Nuance Vocabulary)
+                    type: 'text',
+                    question: "Choose the word that best fits: Her ___ response suggested she wasn't telling the whole truth.",
+                    options: ["equivocal", "explicit", "ubiquitous", "ephemeral"],
+                    correctAnswer: "equivocal", // Ambiguous
+                    difficulty: 'C2'
+                },
+                { // 45 (C2 - Text - Very Advanced Idiom/Expression)
+                    type: 'text',
+                    question: "He decided to 'grasp the nettle' and confront his difficult colleague directly. This means he decided to ___.",
+                    options: ["avoid the problem", "tackle a difficult situation decisively", "ask for help", "ignore the issue"],
+                    correctAnswer: "tackle a difficult situation decisively",
+                    difficulty: 'C2'
+                },
+                 { // 46 (C2 - Text - Register/Formality)
+                    type: 'text',
+                    question: "Which phrase is the MOST formal and appropriate for a high-level business report?",
+                    options: ["We think profits will go up.", "It looks like profits are gonna rise.", "We anticipate an increase in profits.", "Profits should climb, we reckon."],
+                    correctAnswer: "We anticipate an increase in profits.",
+                    difficulty: 'C2'
+                },
+                { // 47 (C2 - Text - Complex Structure (e.g., Participle Clause))
+                    type: 'text',
+                    question: "___ exhausted after the marathon, the runner collapsed at the finish line.",
+                    options: ["Having", "Feeling", "Being", "Completely"], // 'Completely' can work adverbially, but 'Being' or 'Feeling' create standard participle clause. 'Completely' fits best stylistically here.
+                    correctAnswer: "Completely", // This tests adverb placement/intensifier more than pure participle. Let's change.
+                    // Revision for better C2 participle clause:
+                    question: "___ all his savings, he was unable to buy the house.", // Replaced Q47
+                    options: ["Having spent", "Spending", "Spent", "Being spent"],
+                    correctAnswer: "Having spent",
+                    difficulty: 'C2'
+                },
+                { // 48 (C2 - Text - Subtle Collocation/Word Choice)
+                    type: 'text',
+                    question: "The scientist presented ___ evidence to support her theory.",
+                    options: ["compelling", "forcing", "making", "doing"], // Strong collocation: compelling evidence
+                    correctAnswer: "compelling",
+                    difficulty: 'C2'
+                },
+                { // 49 (C2 - Image - Infer Abstract Meaning/Symbolism)
+                    type: 'image',
+                    question: "What abstract concept might this image best represent?",
+                    imageSrc: "https://via.placeholder.com/350x200/e0e0e0/777777?text=Placeholder+(Hourglass+Almost+Empty)",
+                    imageAlt: "An hourglass with sand nearly finished",
+                    options: ["Infinite possibilities", "The passage of time / Urgency", "Agricultural abundance", "Technological progress"],
+                    correctAnswer: "The passage of time / Urgency",
+                    difficulty: 'C2'
+                },
+                { // 50 (C2 - Text - Literary/Figurative Language Understanding)
+                    type: 'text',
+                    question: "In the sentence 'The city was a concrete jungle', the term 'concrete jungle' functions as a ___.",
+                    options: ["simile", "metaphor", "personification", "paradox"],
+                    correctAnswer: "metaphor",
+                    difficulty: 'C2'
+                },
+            ];
+
+
+            // --- State Variables ---
+            let currentQuestionIndex = 0;
+            let userAnswers = {};
+            let score = 0;
+            let resultsChart = null;
+            let currentLevel = "N/A";
+
+            // --- DOM Elements (Assume they are correctly selected as before) ---
+            const quizSection = document.getElementById('quiz-section');
+            const resultsSection = document.getElementById('results-section');
+            const questionContainer = document.getElementById('question-container');
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const submitBtn = document.getElementById('submit-btn');
+            const questionCounter = document.getElementById('question-counter');
+            const userInfoForm = document.getElementById('user-info-form');
+            const fullNameInput = document.getElementById('fullName');
+            const emailInput = document.getElementById('email');
+            const motivationalMessageEl = document.getElementById('motivational-message');
+            const correctCountEl = document.getElementById('correct-count');
+            const incorrectCountEl = document.getElementById('incorrect-count');
+            const levelEl = document.getElementById('level');
+            const resultsChartCtx = document.getElementById('results-chart').getContext('2d');
+            const downloadCsvBtn = document.getElementById('download-csv-btn');
+            const downloadPngBtn = document.getElementById('download-png-btn');
+            const retakeBtn = document.getElementById('retake-btn');
+            const darkModeToggle = document.getElementById('darkModeToggle');
+            const currentYearEl = document.getElementById('current-year');
+
+
+            // --- Functions ---
+
+            // Dark Mode Logic (using new CSS vars)
+            const applyDarkMode = (isDark) => {
+                document.body.classList.toggle('dark-mode', isDark);
+                darkModeToggle.classList.toggle('fa-moon', !isDark);
+                darkModeToggle.classList.toggle('fa-sun', isDark);
+                darkModeToggle.setAttribute('aria-label', isDark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro');
+                localStorage.setItem('darkMode', isDark ? 'enabled' : 'disabled');
+                if (resultsChart) {
+                   updateChartAppearance(isDark); // Use a combined function for chart appearance
+                   resultsChart.update();
+                }
+            };
+            const toggleDarkMode = () => applyDarkMode(!document.body.classList.contains('dark-mode'));
+
+            // Lazy Loading (no changes needed)
+             const lazyLoadImages = () => {
+                const images = questionContainer.querySelectorAll('img.lazyload[data-src]');
+                if ('IntersectionObserver' in window) {
+                    const observer = new IntersectionObserver((entries, observerInstance) => {
+                        entries.forEach(entry => {
+                            if (entry.isIntersecting) {
+                                const img = entry.target;
+                                img.src = img.dataset.src;
+                                img.removeAttribute('data-src');
+                                img.classList.add('lazyloaded');
+                                img.onload = () => { img.style.backgroundColor = 'transparent'; };
+                                observerInstance.unobserve(img);
+                            }
+                        });
+                    }, { rootMargin: "0px 0px 200px 0px" }); // Load even earlier
+                    images.forEach(img => observer.observe(img));
+                } else {
+                    images.forEach(img => {
+                         img.src = img.dataset.src; img.removeAttribute('data-src'); img.classList.add('lazyloaded'); img.style.backgroundColor = 'transparent';
+                    });
+                }
+            };
+
+            // Render Question (Using new styles/structure)
+            const renderQuestion = (index) => {
+                 if (index < 0 || index >= questions.length) return;
+                 questionContainer.classList.remove('fade-in'); // Prepare for fade-in
+
+                 const questionData = questions[index];
+                 let optionsHtml = questionData.options.map((option, i) => {
+                     const isSelected = userAnswers[index] === option;
+                     const selectedClass = isSelected ? 'selected' : '';
+                     const iconHtml = isSelected ? '<i class="fas fa-check-circle"></i>' : '<i class="far fa-circle" aria-hidden="true"></i>';
+                     return `
+                         <button class="btn option-btn ${selectedClass}" data-option="${option}" role="radio" aria-checked="${isSelected}" tabindex="0">
+                            <span class="option-letter">${String.fromCharCode(65 + i)}.</span>
+                            <span class="option-text flex-grow-1">${option}</span> ${/* Text grows */''}
+                            ${iconHtml}
+                         </button>`;
+                 }).join('');
+
+                 let mediaHtml = '';
+                 if (questionData.type === 'image' && questionData.imageSrc) {
+                     mediaHtml = `<img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-src="${questionData.imageSrc}" alt="${questionData.imageAlt || 'Imagen de la pregunta'}" class="question-image lazyload mb-4" loading="lazy">`;
+                 }
+
+                 questionContainer.innerHTML = `
+                     <div class="card-body">
+                          <p class="text-muted small mb-2 fw-bold">Nivel MCER: ${questionData.difficulty || 'N/A'}</p>
+                         <h5 class="card-title mb-3 fs-4" id="question-text">
+                              <span class="badge bg-primary rounded-pill me-2 align-middle">${index + 1}</span> ${/* Badge styling */''}
+                              ${questionData.question}
+                          </h5>
+                         ${mediaHtml}
+                         <div class="options-group mt-4" role="radiogroup" aria-labelledby="question-text">
+                             ${optionsHtml}
+                         </div>
+                     </div>`;
+
+                 requestAnimationFrame(() => questionContainer.classList.add('fade-in')); // Fade in new content
+
+                 questionContainer.querySelectorAll('.option-btn').forEach(btn => {
+                     btn.addEventListener('click', () => selectAnswer(index, btn.dataset.option));
+                     btn.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectAnswer(index, btn.dataset.option); } });
+                 });
+
+                 questionCounter.textContent = `Pregunta ${index + 1} / ${questions.length}`;
+                 prevBtn.disabled = index === 0;
+                 nextBtn.style.display = index === questions.length - 1 ? 'none' : 'inline-block';
+                 submitBtn.style.display = index === questions.length - 1 ? 'inline-block' : 'none';
+                 lazyLoadImages();
+
+                 setTimeout(() => { // Focus management
+                      const focusTarget = questionContainer.querySelector('h5') || questionContainer.querySelector('button');
+                      if (focusTarget) {
+                          if (focusTarget.tagName === 'H5') focusTarget.setAttribute('tabindex', '-1');
+                          focusTarget.focus({ preventScroll: true }); // Prevent scroll jump if possible
+                      }
+                 }, 100);
+             };
+
+             // Select Answer (Added auto-next focus)
+             const selectAnswer = (index, selectedOption) => {
+                 userAnswers[index] = selectedOption;
+                 saveStateToLocalStorage();
+
+                 // Update visual state efficiently
+                 questionContainer.querySelectorAll('.option-btn').forEach(btn => {
+                     const isSelected = btn.dataset.option === selectedOption;
+                     btn.classList.toggle('selected', isSelected);
+                     btn.setAttribute('aria-checked', isSelected);
+                     const icon = btn.querySelector('i');
+                     if (icon) icon.className = isSelected ? 'fas fa-check-circle' : 'far fa-circle';
+                 });
+
+                 // Auto-next or focus submit
+                 if (currentQuestionIndex < questions.length - 1) {
+                     setTimeout(nextQuestion, 300); // Slightly shorter delay
+                 } else {
+                      submitBtn.focus();
+                  }
+             };
+
+            // Navigation Functions (no changes needed)
+            const nextQuestion = () => { if (currentQuestionIndex < questions.length - 1) renderQuestion(++currentQuestionIndex); };
+            const previousQuestion = () => { if (currentQuestionIndex > 0) renderQuestion(--currentQuestionIndex); };
+
+            // Score and Level Calculation (no changes needed in logic)
+            const calculateScore = () => { score = questions.reduce((count, q, i) => count + (userAnswers[i] === q.correctAnswer ? 1 : 0), 0); };
+            const getLevel = (correct) => { /* Kept original mapping */
+                if (correct >= 46) return "D1.1"; if (correct >= 41) return "C1.3"; if (correct >= 36) return "C1.2";
+                if (correct >= 31) return "C1.1"; if (correct >= 26) return "B1.3"; if (correct >= 21) return "B1.2";
+                if (correct >= 16) return "B1.1"; if (correct >= 11) return "A1.3"; if (correct >= 6) return "A1.2";
+                if (correct >= 1) return "A1.1"; return "A1.0";
+            };
+            const getMotivationalMessage = (level, score) => { /* Kept original messages, adjusted alert class based on new colors */
+                 const percentage = questions.length > 0 ? ((score / questions.length) * 100).toFixed(0) : 0;
+                 let message = "", alertClass = "alert-secondary"; // Default
+                 if (level.startsWith("D") || level.startsWith("C")) { message = `🎉 ¡Excelente! (${percentage}%) Nivel ${level}. Demuestras una competencia muy alta.`; alertClass = "alert-success"; }
+                 else if (level.startsWith("B")) { message = `👍 ¡Muy bien! (${percentage}%) Nivel ${level}. Tienes un nivel intermedio sólido.`; alertClass = "alert-info"; } // Use info for B level
+                 else if (level.startsWith("A") && level !== "A1.0") { message = `😊 ¡Buen progreso! (${percentage}%) Nivel ${level}. Sigue construyendo tu base.`; alertClass = "alert-warning"; }
+                 else { message = `💡 ¡Sigue practicando! (${percentage}%) Cada esfuerzo cuenta.`; }
+                 // Override for perfect score
+                 if (score === questions.length) { message = `🏆 ¡Perfecto! (${percentage}%) Nivel ${level}. ¡Increíble dominio del inglés!`; alertClass = "alert-success"; }
+
+                 return { message, alertClass };
+            };
+
+            // Chart Appearance Update (Combined color/style logic)
+             const updateChartAppearance = (isDark) => {
+                 if (!resultsChart) return;
+                 const style = getComputedStyle(document.documentElement);
+                 const correctColor = style.getPropertyValue(isDark ? '--chart-correct-dark' : '--chart-correct').trim();
+                 const incorrectColor = style.getPropertyValue(isDark ? '--chart-incorrect-dark' : '--chart-incorrect').trim();
+                 const borderColor = style.getPropertyValue('--chart-border-color').trim(); // Uses specific chart border var
+                 const textColor = style.getPropertyValue('--text-color').trim();
+
+                 resultsChart.data.datasets[0].backgroundColor = [correctColor, incorrectColor];
+                 resultsChart.data.datasets[0].borderColor = [borderColor, borderColor];
+                 if (resultsChart.options.plugins.legend) resultsChart.options.plugins.legend.labels.color = textColor;
+                 if (resultsChart.options.plugins.tooltip) { // Update tooltip colors if needed
+                     // resultsChart.options.plugins.tooltip.titleColor = textColor;
+                     // resultsChart.options.plugins.tooltip.bodyColor = textColor;
+                 }
+             };
+
+            // Render Results Chart (Using new styles)
+            const renderChart = () => {
+                 const correctAnswers = score;
+                 const incorrectAnswers = questions.length - score;
+                 const isDark = document.body.classList.contains('dark-mode');
+
+                 const chartData = { /* Same data structure */
+                     labels: ['Correctas', 'Incorrectas'],
+                     datasets: [{ label: 'Resultados', data: [correctAnswers, incorrectAnswers], borderWidth: 4, hoverOffset: 10 }]
+                 };
+                 const chartOptions = { /* Same options structure, colors handled by updateChartAppearance */
+                     responsive: true, maintainAspectRatio: false, animation: false, cutout: '50%', /* Slightly larger cutout */
+                     plugins: {
+                         legend: { position: 'bottom', labels: { font: { size: 14 }, padding: 25 } },
+                         tooltip: { bodyFont: { size: 14 }, padding: 12 }
+                     }
+                 };
+
+                 if (resultsChart) resultsChart.destroy();
+                 resultsChart = new Chart(resultsChartCtx, { type: 'doughnut', data: chartData, options: chartOptions });
+                 updateChartAppearance(isDark); // Apply initial colors/styles
+                 resultsChart.update();
+
+                 // GSAP Animations (Kept similar, adjust timings if needed)
+                 gsap.from(resultsChart.canvas, { duration: 1.0, scale: 0.7, opacity: 0, ease: "power3.out", delay: 0.3 });
+                 gsap.from(resultsChart.getDatasetMeta(0).data, { circumference: 0, ease: 'power2.out', duration: 1.2, delay: 0.4 });
+             };
+
+
+             // Show Results (Combined logic)
+             const showResults = () => {
+                 calculateScore();
+                 currentLevel = getLevel(score);
+                 const incorrectCount = questions.length - score;
+
+                 correctCountEl.textContent = score;
+                 incorrectCountEl.textContent = incorrectCount;
+                 levelEl.textContent = currentLevel;
+                 const { message, alertClass } = getMotivationalMessage(currentLevel, score);
+                 motivationalMessageEl.innerHTML = message;
+                 motivationalMessageEl.className = `alert fs-5 mb-5 ${alertClass}`; // Corrected class assignment
+
+                 const resultData = { score, totalQuestions: questions.length, level: currentLevel, timestamp: new Date().toISOString(), answers: userAnswers };
+                 localStorage.setItem('englishAssessmentResult', JSON.stringify(resultData));
+                 localStorage.removeItem('englishAssessmentInProgress');
+
+                 quizSection.style.display = 'none';
+                 resultsSection.style.display = 'block';
+                 gsap.fromTo(resultsSection, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" });
+                 setTimeout(() => resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+                 renderChart();
+             };
+
+            // User Info Submit (no changes needed in logic)
+            const handleUserInfoSubmit = (event) => {
+                 event.preventDefault();
+                 const name = fullNameInput.value.trim();
+                 const email = emailInput.value.trim();
+                 if (!name || !email || !email.includes('@')) { alert('Por favor, ingresa un nombre y correo electrónico válidos.'); return; }
+                 // Mailto link generation (same as before)
+                 const subject = `Resultados Evaluación Inglés MCER - ${name}`;
+                 let body = `Hola ${name},\n\nResultados de la evaluación:\nNivel MCER Estimado: ${currentLevel}\nPuntuación: ${score}/${questions.length}\nFecha: ${new Date().toLocaleString('es-ES')}\n\nDetalles:\n------\n`;
+                 questions.forEach((q, i) => {
+                    const userAnswer = userAnswers[i] || "No respondida";
+                    const isCorrect = userAnswer === q.correctAnswer;
+                    body += `P${i+1} (${q.difficulty}): ${q.question}\n Tu: ${userAnswer} (${isCorrect ? 'Ok' : 'X'})${!isCorrect ? ` | Correcta: ${q.correctAnswer}` : ''}\n\n`;
+                 });
+                 const mailtoLink = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+                 alert("Se abrirá tu cliente de correo con un borrador. Revísalo y envíalo.");
+                 window.open(mailtoLink, '_self');
+             };
+
+            // Download CSV (Added Difficulty Column)
+            const downloadCSV = () => {
+                 let csvContent = "data:text/csv;charset=utf-8,\uFEFF";
+                 csvContent += "Numero,Nivel MCER,Pregunta,Tu Respuesta,Respuesta Correcta,Resultado\n";
+                 questions.forEach((q, i) => {
+                     const qNum = i + 1;
+                     const difficulty = q.difficulty || 'N/A';
+                     const qText = `"${q.question.replace(/"/g, '""')}"`;
+                     const uAnswerRaw = userAnswers[i];
+                     const uAnswer = uAnswerRaw ? `"${uAnswerRaw.replace(/"/g, '""')}"` : "No Respondida";
+                     const cAnswer = `"${q.correctAnswer.replace(/"/g, '""')}"`;
+                     const result = (uAnswerRaw === q.correctAnswer) ? "Correcta" : "Incorrecta";
+                     csvContent += `${qNum},${difficulty},${qText},${uAnswer},${cAnswer},${result}\n`;
+                 });
+                 csvContent += `\nResumen\nCorrectas,${score}\nIncorrectas,${questions.length - score}\nNivel Estimado,${currentLevel}\n`;
+                 const encodedUri = encodeURI(csvContent);
+                 const link = document.createElement("a");
+                 link.setAttribute("href", encodedUri);
+                 const timestamp = new Date().toISOString().slice(0, 10);
+                 link.setAttribute("download", `Resultados_Ingles_MCER_${timestamp}.csv`);
+                 document.body.appendChild(link); link.click(); document.body.removeChild(link);
+             };
+
+            // Download PNG (using updated theme background)
+            const downloadChartPNG = () => {
+                 if (!resultsChart || !resultsChart.canvas) { alert("Error al generar gráfico."); return; }
+                 const originalBg = resultsChart.canvas.style.backgroundColor;
+                 const themeBgColor = getComputedStyle(document.documentElement).getPropertyValue('--card-bg').trim();
+                 resultsChart.canvas.style.backgroundColor = themeBgColor;
+                 resultsChart.update();
+                 setTimeout(() => {
+                     try {
+                         const dataUrl = resultsChart.toDataURL('image/png');
+                         const link = document.createElement('a'); link.href = dataUrl;
+                         const timestamp = new Date().toISOString().slice(0, 10);
+                         link.download = `Grafico_Resultados_MCER_${timestamp}.png`;
+                         document.body.appendChild(link); link.click(); document.body.removeChild(link);
+                     } catch (e) { console.error("Error PNG:", e); alert("Error al generar imagen."); }
+                     finally { resultsChart.canvas.style.backgroundColor = originalBg; resultsChart.update(); }
+                 }, 100);
+             };
+
+            // Retake Quiz (no changes needed in logic)
+             const retakeQuiz = () => {
+                 currentQuestionIndex = 0; userAnswers = {}; score = 0; currentLevel = "N/A";
+                 if (resultsChart) { resultsChart.destroy(); resultsChart = null; }
+                 localStorage.removeItem('englishAssessmentResult'); localStorage.removeItem('englishAssessmentInProgress');
+                 resultsSection.style.display = 'none'; quizSection.style.display = 'block';
+                 gsap.fromTo(quizSection, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" });
+                 renderQuestion(0); userInfoForm.reset();
+                 setTimeout(() => quizSection.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+             };
+
+            // LocalStorage Persistence (no changes needed in logic)
+             const saveStateToLocalStorage = () => {
+                 const state = { currentQuestionIndex, userAnswers, timestamp: Date.now() };
+                 localStorage.setItem('englishAssessmentInProgress', JSON.stringify(state));
+             };
+             const loadStateFromLocalStorage = () => {
+                 try {
+                     const savedState = localStorage.getItem('englishAssessmentInProgress');
+                     if (savedState) {
+                         const state = JSON.parse(savedState);
+                         if (!localStorage.getItem('englishAssessmentResult')) { // Only load if not finished
+                              if (confirm("Se encontró progreso guardado. ¿Continuar?")) {
+                                 currentQuestionIndex = state.currentQuestionIndex || 0;
+                                 userAnswers = state.userAnswers || {};
+                                 return true; // State loaded
+                             } else { localStorage.removeItem('englishAssessmentInProgress'); } // User declined
+                         } else { localStorage.removeItem('englishAssessmentInProgress'); } // Clear finished progress
+                     }
+                 } catch (e) { localStorage.removeItem('englishAssessmentInProgress'); }
+                 return false; // State not loaded
+             };
+
+            // --- Initialization ---
+            currentYearEl.textContent = new Date().getFullYear();
+            applyDarkMode(localStorage.getItem('darkMode') === 'enabled'); // Apply theme first
+            const stateLoaded = loadStateFromLocalStorage();
+            const previousResultData = localStorage.getItem('englishAssessmentResult');
+
+            if (previousResultData && !stateLoaded) { // Show previous results if found AND not resuming progress
+                try {
+                    const resultData = JSON.parse(previousResultData);
+                    score = resultData.score; userAnswers = resultData.answers; // Load data for display/export
+                    showResults(); // Display the results page directly
+                } catch (e) { renderQuestion(currentQuestionIndex); /* Start fresh if error */ }
+            } else { // Start quiz (fresh or resumed)
+                renderQuestion(currentQuestionIndex);
+            }
+
+            // --- Global Event Listeners ---
+            darkModeToggle.addEventListener('click', toggleDarkMode);
+            darkModeToggle.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleDarkMode(); } });
+            nextBtn.addEventListener('click', nextQuestion);
+            prevBtn.addEventListener('click', previousQuestion);
+            submitBtn.addEventListener('click', () => { if (confirm("¿Finalizar y ver resultados?")) showResults(); });
+            userInfoForm.addEventListener('submit', handleUserInfoSubmit);
+            downloadCsvBtn.addEventListener('click', downloadCSV);
+            downloadPngBtn.addEventListener('click', downloadChartPNG);
+            retakeBtn.addEventListener('click', retakeQuiz);
+
+        }); // End DOMContentLoaded
+    </script>
+
+</body>
+</html>
